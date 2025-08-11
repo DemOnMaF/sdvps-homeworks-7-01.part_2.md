@@ -107,7 +107,31 @@
 **Выполните действия, приложите файлы с модифицированным плейбуком и вывод выполнения.** 
 
 Модифицируйте плейбук из пункта 3, задания 1. В качестве приветствия он должен установить IP-адрес и hostname управляемого хоста, пожелание хорошего дня системному администратору. 
+<details>
+<summary>Вывод</summary>
 
+```yml
+---
+- name: PLAY3
+  hosts: my
+  become: true
+
+  vars:
+    motd_message: "Хорошего дня, админ! Сегодня {{ lookup('pipe', 'date') }}. Добро пожаловать на {{ansible_facts['all_ipv4_addresses'][1]}} {{ansible_facts['hostname'] }} "
+
+  tasks:
+    - name: Set custom MOTD message
+      blockinfile:
+        path: /etc/motd
+        create: yes
+        block: |
+          {{ motd_message }}
+
+```
+
+![image](img/02.01.png)
+
+</details>
 
 
 ### Задание 3
