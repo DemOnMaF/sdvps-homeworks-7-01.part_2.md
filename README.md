@@ -78,6 +78,25 @@
 <details>
 <summary>Вывод</summary>
 
+```yml
+---
+- name: PLAY3
+  hosts: my
+  become: true
+
+  vars:
+    motd_message: "Добро пожаловать на наш сервер! Сегодня {{ lookup('pipe', 'date') }}."
+
+  tasks:
+    - name: Set custom MOTD message
+      blockinfile:
+        path: /etc/motd
+        create: yes
+        block: |
+          {{ motd_message }}
+
+```
+
 ![image](img/01.03.png)
 
 </details>
