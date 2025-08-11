@@ -27,6 +27,21 @@
 <details>
 <summary>Вывод</summary>
 
+```yml
+---
+- name: PLAY1
+  hosts: my
+  become: yes
+  tasks:
+
+  - name: Download and Unarchive
+    unarchive:
+      src: https://dlcdn.apache.org/kafka/3.9.1/kafka-3.9.1-src.tgz
+      dest: /usr/local
+      remote_src: yes
+
+```
+
 ![image](img/01.01.png)
 
 </details>
@@ -34,6 +49,26 @@
 2. Установить пакет tuned из стандартного репозитория вашей ОС. Запустить его, как демон — конфигурационный файл systemd появится автоматически при установке. Добавить tuned в автозагрузку.
 <details>
 <summary>Вывод</summary>
+
+```yml
+---
+- name: PLAY2
+  hosts: my
+  become: true
+  tasks:
+
+  - name: install tuned
+    apt:
+      name: tuned
+      state: present
+
+  - name: Enable and start tuned
+    service:
+      name: tuned
+      state: started
+      enabled: yes
+
+```
 
 ![image](img/01.02.png)
 
