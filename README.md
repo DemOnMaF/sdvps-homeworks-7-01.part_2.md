@@ -49,6 +49,9 @@
 2. Установить пакет tuned из стандартного репозитория вашей ОС. Запустить его, как демон — конфигурационный файл systemd появится автоматически при установке. Добавить tuned в автозагрузку.
 <details>
 <summary>Вывод</summary>
+  
+### playbook-myrole1.yml
+
 
 ```yml
 ---
@@ -151,6 +154,9 @@
 <details>
 <summary>Вывод</summary>
 
+
+### playbook-myrole1.yml
+
 ```yml
 ---
 - name: PLAY4_myrole1
@@ -159,6 +165,103 @@
 
   roles: 
    - myrole1
+
+```
+
+### main.yml
+
+```yml
+# tasks file for apache
+  - import_tasks: install_apache.yml
+  - import_tasks: open_port80.yml
+  - import_tasks: start_apache.yml
+  - import_tasks: check_port.yml
+  - import_tasks: index.yml
+  - import_tasks: check_connection.yml
+
+```
+
+### install_apache.yml
+
+```yml
+---
+  - name: install apache web server
+    apt:
+      name: apache2
+      state: present
+
+```
+
+### open_port80.yml
+
+```yml
+---
+- name: Open port 80
+  ufw:
+    rule: allow
+    port: 80
+    proto: tcp
+
+```
+
+### start_apache.yml
+
+```yml
+---
+  - name: start apache webserver
+    service:
+      name: apache2
+      state: started
+      enabled: true
+
+```
+
+
+### check_port.yml
+
+```yml
+---
+  - name: wait for port 80 to become open
+    wait_for:
+      port: 80
+      delay: 10
+
+```
+
+
+### index.yml
+
+```yml
+- name: index.html with system info
+  template:
+    src: index.html.j2
+    dest: /var/www/html/index.html
+    owner: root
+    group: root
+    mode: 0644
+
+```
+
+### index.html.j2
+
+```
+<p>IP: {{ ansible_facts.all_ipv4_addresses [0] }}
+<p>CPU: {{ ansible_facts.processor }}
+<p>RAM: {{ ansible_facts.memtotal_mb }} MB
+<p>sda1_size: {{ ansible_facts['devices']['sda']['size'] }} 
+
+```
+
+
+### check_connection.yml
+
+```yml
+---
+  - name: Check that you can connect (GET) to a page and it returns a status 200
+    ansible.builtin.uri:
+      url: "{{address}}"
+    vars:
+      address: "http://{{ ansible_facts.all_ipv4_addresses [0] }}"
 
 ```
 
